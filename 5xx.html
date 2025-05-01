@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare | Origin Connection Error</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --bg-color: #151a29;
+            --text-color: #f3f4f6;
+            --card-bg: #1e2536;
+            --card-header-bg: #151a29;
+            --card-footer-bg: #151a29;
+        }
+        
+        .light-mode {
+            --bg-color: #f9fafb;
+            --text-color: #1f2937;
+            --card-bg: #ffffff;
+            --card-header-bg: #f9fafb;
+            --card-footer-bg: #f9fafb;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            width: 100%;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .error-card {
+            background-color: var(--card-bg);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+        
+        .card-header, .card-footer {
+            background-color: var(--card-header-bg);
+            transition: background-color 0.3s;
+        }
+        
+        .connection-dot {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .connection-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 3s linear forwards infinite;
+        }
+        
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .connection-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .connection-line-container {
+                width: 100%;
+                margin: 10px 0;
+            }
+            
+            .footer-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .footer-location {
+                margin-top: 8px;
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4 md:p-6">
+    <div class="max-w-3xl w-full rounded-xl error-card overflow-hidden">
+        <!-- Header -->
+        <div class="p-6 card-header flex items-center">
+            <div class="bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div class="flex-grow text-lg font-medium">
+                ::CLOUDFLARE_ERROR_500S_BOX::
+            </div>
+            <button id="darkModeToggle" class="ml-auto" aria-label="Toggle light mode">
+                <!-- Sun icon for dark mode -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 light-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <!-- Moon icon for light mode - initially hidden -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 dark-icon hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+        </div>
+        
+        <div class="p-6 md:p-8">
+            <p class="text-gray-400 mb-8">Please try again later, there was an unexpected error connecting to the origin server.</p>
+            
+            <!-- Connection Tracking -->
+            <div class="bg-gray-800 rounded-lg p-4 md:p-6 mb-8">
+                <div class="flex items-center text-sm text-gray-400 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Connection Tracking
+                </div>
+                
+                <div class="flex justify-between items-center mt-4 connection-container">
+                    <div class="flex items-center">
+                        <span class="connection-dot bg-green-500"></span>
+                        <span class="text-sm">You</span>
+                    </div>
+                    <div class="flex-1 px-4 connection-line-container">
+                        <svg class="w-full h-4" viewBox="0 0 100 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="0" y1="5" x2="100" y2="5" stroke="#10b981" stroke-width="2" class="connection-line"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="connection-dot bg-green-500"></span>
+                        <span class="text-sm">CDN</span>
+                    </div>
+                    <div class="flex-1 px-4 connection-line-container">
+                        <svg class="w-full h-4" viewBox="0 0 100 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="0" y1="5" x2="100" y2="5" stroke="#ef4444" stroke-width="2" stroke-dasharray="6,6"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="connection-dot bg-red-500"></span>
+                        <span class="text-sm">Origin</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="px-6 py-4 card-footer text-sm text-gray-500 flex justify-between items-center footer-container">
+            <div>
+                IP: ::CLIENT_IP:: • Ray ID: ::RAY_ID::
+            </div>
+            <div class="footer-location">
+                Location: ::GEO::
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Light/Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkIcon = document.querySelector('.dark-icon');
+        const lightIcon = document.querySelector('.light-icon');
+        
+        // Default is dark mode (per the image shown)
+        // Toggle theme
+        darkModeToggle.addEventListener("click", function() {
+            document.body.classList.toggle("light-mode");
+            const isLightMode = document.body.classList.contains("light-mode");
+            
+            // Update icon visibility
+            if (isLightMode) {
+                darkIcon.classList.remove("hidden");
+                lightIcon.classList.add("hidden");
+                localStorage.setItem("theme", "light");
+            } else {
+                darkIcon.classList.add("hidden");
+                lightIcon.classList.remove("hidden");
+                localStorage.setItem("theme", "dark");
+            }
+        });
+        
+        // Check for saved theme preference
+        const currentTheme = localStorage.getItem("theme");
+        if (currentTheme === "light") {
+            document.body.classList.add("light-mode");
+            darkIcon.classList.remove("hidden");
+            lightIcon.classList.add("hidden");
+        }
+    </script>
+</body>
+</html>
